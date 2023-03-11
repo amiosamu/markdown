@@ -23,6 +23,7 @@ type Error struct {
 
 func (e *Error) Error() string {
 	return e.Message
+
 }
 
 func (e *Error) StatusCode() int {
