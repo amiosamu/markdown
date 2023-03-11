@@ -7,6 +7,7 @@
 .idea
 *.pem
 *.env
+*.yml
 # Test binary, built with `go test -c`
 *.test
 
