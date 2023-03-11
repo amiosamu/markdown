@@ -19,7 +19,7 @@ func TestNewPairFromuser(t *testing.T) {
 	pubKey, _ := jwt.ParseRSAPublicKeyFromPEM(pub)
 	secret := "anotsorandomtestsecret"
 
-	tokenService := NewTokenService(&tsConfig{
+	tokenService := NewTokenService(&TSConfig{
 		PrivateKey:    privKey,
 		PublicKey:     pubKey,
 		RefreshSecret: secret,

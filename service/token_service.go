@@ -8,15 +8,15 @@ import (
 	"log"
 )
 
-type tokenService struct {
+type TokenService struct {
 	PrivateKey    *rsa.PrivateKey
 	PublicKey     *rsa.PublicKey
 	RefreshSecret string
 }
 
-// tsConfig will hold repositories that will eventually be injected into
+// TSConfig will hold repositories that will eventually be injected into
 // this service layer
-type tsConfig struct {
+type TSConfig struct {
 	PrivateKey    *rsa.PrivateKey
 	PublicKey     *rsa.PublicKey
 	RefreshSecret string
@@ -24,15 +24,15 @@ type tsConfig struct {
 
 // NewTokenService is a factory function for
 // initializing a UserService with its repository layer dependencies
-func NewTokenService(c *tsConfig) model.TokenService {
-	return &tokenService{
+func NewTokenService(c *TSConfig) model.TokenService {
+	return &TokenService{
 		PrivateKey:    c.PrivateKey,
 		PublicKey:     c.PublicKey,
 		RefreshSecret: c.RefreshSecret,
 	}
 }
 
-func (s *tokenService) NewPairFromUser(ctx context.Context, u *model.User, prevTokenID string) (*model.TokenPair, error) {
+func (s *TokenService) NewPairFromUser(ctx context.Context, u *model.User, prevTokenID string) (*model.TokenPair, error) {
 	idToken, err := generateIDToken(u, s.PrivateKey)
 	if err != nil {
 		log.Printf("Error generating idToken for uid: %v. Error: %v\n", u.UID, err.Error())
