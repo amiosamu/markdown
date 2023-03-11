@@ -2,17 +2,19 @@ package main
 
 import (
 	"context"
-	"github.com/amiosamu/markdown/handler"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/amiosamu/markdown/handler"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
 	log.Println("starting server...")
 	engine := gin.Default()
 
