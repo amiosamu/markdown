@@ -6,11 +6,11 @@ import (
 	"os"
 )
 
-type dataSources struct {
+type DataSources struct {
 	DB *sqlx.DB
 }
 
-func InitDB() (*dataSources, error) {
+func InitDB() (*DataSources, error) {
 	pgHost := os.Getenv("PG_HOST")
 	pgPort := os.Getenv("PG_PORT")
 	pgUser := os.Getenv("PG_USER")
@@ -26,7 +26,14 @@ func InitDB() (*dataSources, error) {
 		return nil, fmt.Errorf("error connecting to db %w", err)
 	}
 
-	return &dataSources{
+	return &DataSources{
 		DB: db,
 	}, nil
+}
+
+func (d *DataSources) Close() error {
+	if err := d.DB.Close(); err != nil {
+		return fmt.Errorf("error closing Postgresql: %w", err)
+	}
+	return nil
 }
