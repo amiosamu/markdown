@@ -1,43 +1,45 @@
 package handler
 
 import (
+	"github.com/amiosamu/markdown/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"os"
 )
 
 type Handler struct {
+	UserService  model.UserService
+	TokenService model.TokenService
 }
 
 type Config struct {
-	Engine *gin.Engine
+	Engine       *gin.Engine
+	UserService  model.UserService
+	TokenService model.TokenService
 }
 
 func NewHandler(c *Config) {
-	h := &Handler{}
-	g := c.Engine.Group(os.Getenv("ACCOUNT_API_URL"))
+	h := &Handler{
+		UserService:  c.UserService,
+		TokenService: c.TokenService,
+	}
+	g := c.Engine.Group("/")
 	g.GET("/me", h.Me)
-	g.POST("/signup", h.SignUp)
+	g.POST("/signup", h.Signup)
 	g.POST("/signin", h.SignIn)
 	g.POST("/signout", h.SignOut)
+	g.POST("/tokens", h.Tokens)
 	g.PUT("/details", h.Details)
-}
-
-func (h *Handler) Me(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"hello": "it is me page",
-	})
-}
-
-func (h *Handler) SignUp(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"hello": "it is sign-up page",
-	})
 }
 
 func (h *Handler) SignIn(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"hello": "it is sign-in page",
+	})
+}
+
+func (h *Handler) Tokens(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"hello": "it is tokens",
 	})
 }
 
