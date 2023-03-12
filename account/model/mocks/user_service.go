@@ -2,7 +2,7 @@ package mocks
 
 import (
 	"context"
-	"github.com/amiosamu/markdown/model"
+	"github.com/amiosamu/markdown/account/model"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 )

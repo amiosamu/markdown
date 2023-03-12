@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"github.com/amiosamu/markdown/model"
+	"github.com/amiosamu/markdown/account/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 )
 
 type Handler struct {
@@ -22,7 +23,7 @@ func NewHandler(c *Config) {
 		UserService:  c.UserService,
 		TokenService: c.TokenService,
 	}
-	g := c.Engine.Group("/")
+	g := c.Engine.Group(os.Getenv("ACCOUNT_API_URL"))
 	g.GET("/me", h.Me)
 	g.POST("/signup", h.Signup)
 	g.POST("/signin", h.SignIn)

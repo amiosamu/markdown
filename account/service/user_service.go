@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/amiosamu/markdown/model"
-	"github.com/amiosamu/markdown/pkg/apperrors"
+	"github.com/amiosamu/markdown/account/model"
+	"github.com/amiosamu/markdown/account/model/apperrors"
 	"github.com/google/uuid"
 	"log"
 )

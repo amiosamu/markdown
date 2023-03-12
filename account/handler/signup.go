@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/amiosamu/markdown/model"
-	"github.com/amiosamu/markdown/pkg/apperrors"
+	"github.com/amiosamu/markdown/account/model"
+	"github.com/amiosamu/markdown/account/model/apperrors"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

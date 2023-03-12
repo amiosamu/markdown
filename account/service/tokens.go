@@ -2,7 +2,7 @@ package service
 
 import (
 	"crypto/rsa"
-	"github.com/amiosamu/markdown/model"
+	"github.com/amiosamu/markdown/account/model"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"log"

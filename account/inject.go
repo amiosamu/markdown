@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/amiosamu/markdown/handler"
-	"github.com/amiosamu/markdown/pkg/database"
-	"github.com/amiosamu/markdown/pkg/repository"
-	"github.com/amiosamu/markdown/service"
+	"github.com/amiosamu/markdown/account/handler"
+	"github.com/amiosamu/markdown/account/repository"
+	"github.com/amiosamu/markdown/account/service"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -13,7 +12,7 @@ import (
 	"os"
 )
 
-func inject(d *database.DataSources) (*gin.Engine, error) {
+func inject(d *DataSources) (*gin.Engine, error) {
 	log.Println("injecting data sources")
 
 	userRepository := repository.NewUserRepository(d.DB)

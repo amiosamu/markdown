@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"crypto/rsa"
-	"github.com/amiosamu/markdown/model"
-	"github.com/amiosamu/markdown/pkg/apperrors"
+	"github.com/amiosamu/markdown/account/model"
+	"github.com/amiosamu/markdown/account/model/apperrors"
 	"log"
 )
 

@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/amiosamu/markdown/model"
-	"github.com/amiosamu/markdown/model/mocks"
-	"github.com/amiosamu/markdown/pkg/apperrors"
+	"github.com/amiosamu/markdown/account/model"
+	"github.com/amiosamu/markdown/account/model/apperrors"
+	"github.com/amiosamu/markdown/account/model/mocks"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

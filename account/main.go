@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/amiosamu/markdown/pkg/database"
 	"log"
 	"net/http"
 	"os"
@@ -15,7 +14,7 @@ func main() {
 
 	log.Println("starting server...")
 
-	db, err := database.InitDB()
+	db, err := InitDB()
 
 	if err != nil {
 		log.Fatalf("unable to init database: %v\n", err)
