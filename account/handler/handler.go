@@ -16,6 +16,7 @@ type Config struct {
 	Engine       *gin.Engine
 	UserService  model.UserService
 	TokenService model.TokenService
+	BaseURL      string
 }
 
 func NewHandler(c *Config) {
@@ -23,7 +24,7 @@ func NewHandler(c *Config) {
 		UserService:  c.UserService,
 		TokenService: c.TokenService,
 	}
-	g := c.Engine.Group(os.Getenv("ACCOUNT_API_URL"))
+	g := c.Engine.Group(os.Getenv(c.BaseURL))
 	g.GET("/me", h.Me)
 	g.POST("/signup", h.Signup)
 	g.POST("/signin", h.SignIn)

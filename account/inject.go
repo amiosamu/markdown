@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 )
 
 func inject(d *DataSources) (*gin.Engine, error) {
@@ -43,19 +44,31 @@ func inject(d *DataSources) (*gin.Engine, error) {
 		return nil, fmt.Errorf("could not parse public key %w", err)
 	}
 
+	idTokenExp := os.Getenv("ID_TOKEN_EXP")
+	refreshTokenExp := os.Getenv("REFRESH_TOKEN_EXP")
+	idExp, err := strconv.ParseInt(idTokenExp, 0, 64)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse REFRESH_TOKEN_EXP as int: %w", err)
+	}
+
+	refreshExp, err := strconv.ParseInt(refreshTokenExp, 0, 64)
 	refreshSecret := os.Getenv("REFRESH_SECRET")
 	tokenService := service.NewTokenService(&service.TSConfig{
-		PrivateKey:    privKey,
-		PublicKey:     pubKey,
-		RefreshSecret: refreshSecret,
+		PrivateKey:            privKey,
+		PublicKey:             pubKey,
+		RefreshSecret:         refreshSecret,
+		IDExpirationSecs:      idExp,
+		RefreshExpirationSecs: refreshExp,
 	})
 
 	router := gin.Default()
 
+	baseURL := os.Getenv("ACCOUNT_API_URL")
 	handler.NewHandler(&handler.Config{
 		Engine:       router,
 		UserService:  userService,
 		TokenService: tokenService,
+		BaseURL:      baseURL,
 	})
 	return router, nil
 }

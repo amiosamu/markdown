@@ -9,11 +9,13 @@ import (
 type Type string
 
 const (
-	Authorization Type = "AUTHORIZATION"
-	BadRequest    Type = "BADREQUEST"
-	Conflict      Type = "CONFLICT"
-	Internal      Type = "INTERNAL"
-	NotFound      Type = "NOTFOUND"
+	Authorization        Type = "AUTHORIZATION"
+	BadRequest           Type = "BADREQUEST"
+	Conflict             Type = "CONFLICT"
+	Internal             Type = "INTERNAL"
+	NotFound             Type = "NOTFOUND"
+	UnsupportedMediaType Type = "UNSUPPORTEDMEDIATYPE" // for http 415
+	PayloadTooLarge      Type = "PAYLOADTOOLARGE"
 )
 
 type Error struct {
@@ -38,8 +40,13 @@ func (e *Error) StatusCode() int {
 		return http.StatusInternalServerError
 	case NotFound:
 		return http.StatusNotFound
+	case UnsupportedMediaType:
+		return http.StatusUnsupportedMediaType
+	case PayloadTooLarge:
+		return http.StatusRequestEntityTooLarge
 	default:
 		return http.StatusInternalServerError
+
 	}
 }
 
@@ -83,5 +90,19 @@ func NewNotFound(name, value string) *Error {
 	return &Error{
 		Type:    NotFound,
 		Message: fmt.Sprintf("resource: %v with value: %v, not found", name, value),
+	}
+}
+
+func NewUnsupportedMediaType(reason string) *Error {
+	return &Error{
+		Type:    UnsupportedMediaType,
+		Message: reason,
+	}
+}
+
+func NewPayloadTooLarge(maxBodySize, contentLength int64) *Error {
+	return &Error{
+		Type:    PayloadTooLarge,
+		Message: fmt.Sprintf("Max payload size of %v exceeded. Actual payload size: %v", maxBodySize, contentLength),
 	}
 }
