@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 func inject(d *DataSources) (*gin.Engine, error) {
@@ -65,12 +66,18 @@ func inject(d *DataSources) (*gin.Engine, error) {
 	router := gin.Default()
 
 	baseURL := os.Getenv("ACCOUNT_API_URL")
-	fmt.Println(string(baseURL))
+
+	handlerTimeout := os.Getenv("HANDLER_TIMEOUT")
+	ht, err := strconv.ParseInt(handlerTimeout, 0, 64)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse HANDLER_TIMEOUT as int: %w", err)
+	}
 	handler.NewHandler(&handler.Config{
-		R:            router,
-		UserService:  userService,
-		TokenService: tokenService,
-		BaseURL:      baseURL,
+		R:               router,
+		UserService:     userService,
+		TokenService:    tokenService,
+		BaseURL:         baseURL,
+		TimeoutDuration: time.Duration(time.Duration(time.Duration(ht) * time.Second)),
 	})
 	return router, nil
 }

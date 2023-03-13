@@ -10,12 +10,13 @@ type Type string
 
 const (
 	Authorization        Type = "AUTHORIZATION"
-	BadRequest           Type = "BADREQUEST"
+	BadRequest           Type = "BAD_REQUEST"
 	Conflict             Type = "CONFLICT"
 	Internal             Type = "INTERNAL"
-	NotFound             Type = "NOTFOUND"
-	UnsupportedMediaType Type = "UNSUPPORTEDMEDIATYPE" // for http 415
-	PayloadTooLarge      Type = "PAYLOADTOOLARGE"
+	NotFound             Type = "NOT_FOUND"
+	UnsupportedMediaType Type = "UNSUPPORTED_MEDIA_TYPE" // for http 415
+	PayloadTooLarge      Type = "PAYLOAD_TOO_LARGE"
+	SeriveUnavailable    Type = "SERVICE_UNAVAILABLE"
 )
 
 type Error struct {
@@ -44,6 +45,8 @@ func (e *Error) StatusCode() int {
 		return http.StatusUnsupportedMediaType
 	case PayloadTooLarge:
 		return http.StatusRequestEntityTooLarge
+	case SeriveUnavailable:
+		return http.StatusServiceUnavailable
 	default:
 		return http.StatusInternalServerError
 
@@ -105,4 +108,12 @@ func NewPayloadTooLarge(maxBodySize, contentLength int64) *Error {
 		Type:    PayloadTooLarge,
 		Message: fmt.Sprintf("Max payload size of %v exceeded. Actual payload size: %v", maxBodySize, contentLength),
 	}
+}
+
+func NewServiceUnavailable() *Error {
+	return &Error{
+		Type:    SeriveUnavailable,
+		Message: fmt.Sprintf("Service unavailalbe"),
+	}
+
 }

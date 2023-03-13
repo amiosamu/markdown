@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"github.com/amiosamu/markdown/account/middleware"
 	"github.com/amiosamu/markdown/account/model"
+	"github.com/amiosamu/markdown/account/model/apperrors"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"os"
+	"time"
 )
 
 type Handler struct {
@@ -13,10 +15,11 @@ type Handler struct {
 }
 
 type Config struct {
-	R            *gin.Engine
-	UserService  model.UserService
-	TokenService model.TokenService
-	BaseURL      string
+	R               *gin.Engine
+	UserService     model.UserService
+	TokenService    model.TokenService
+	BaseURL         string
+	TimeoutDuration time.Duration
 }
 
 func NewHandler(c *Config) {
@@ -24,19 +27,18 @@ func NewHandler(c *Config) {
 		UserService:  c.UserService,
 		TokenService: c.TokenService,
 	}
-	g := c.R.Group(os.Getenv(c.BaseURL))
+	g := c.R.Group("/api/account")
+
+	if gin.Mode() != gin.TestMode {
+		g.Use(middleware.Timeout(c.TimeoutDuration, apperrors.NewInternalServerError()))
+	}
+
 	g.GET("/me", h.Me)
 	g.POST("/signup", h.Signup)
-	g.POST("/signin", h.SignIn)
+	g.POST("/signin", h.Signin)
 	g.POST("/signout", h.SignOut)
 	g.POST("/tokens", h.Tokens)
 	g.PUT("/details", h.Details)
-}
-
-func (h *Handler) SignIn(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"hello": "it is sign-in page",
-	})
 }
 
 func (h *Handler) Tokens(c *gin.Context) {
