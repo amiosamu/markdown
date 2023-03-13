@@ -29,7 +29,7 @@ func main() {
 	//engine := gin.Default()
 	//
 	//handler.NewHandler(&handler.Config{
-	//	Engine: engine,
+	//	R: engine,
 	//})
 
 	srv := &http.Server{

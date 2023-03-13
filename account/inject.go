@@ -65,8 +65,9 @@ func inject(d *DataSources) (*gin.Engine, error) {
 	router := gin.Default()
 
 	baseURL := os.Getenv("ACCOUNT_API_URL")
+	fmt.Println(string(baseURL))
 	handler.NewHandler(&handler.Config{
-		Engine:       router,
+		R:            router,
 		UserService:  userService,
 		TokenService: tokenService,
 		BaseURL:      baseURL,

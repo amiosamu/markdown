@@ -13,7 +13,7 @@ type Handler struct {
 }
 
 type Config struct {
-	Engine       *gin.Engine
+	R            *gin.Engine
 	UserService  model.UserService
 	TokenService model.TokenService
 	BaseURL      string
@@ -24,7 +24,7 @@ func NewHandler(c *Config) {
 		UserService:  c.UserService,
 		TokenService: c.TokenService,
 	}
-	g := c.Engine.Group(os.Getenv(c.BaseURL))
+	g := c.R.Group(os.Getenv(c.BaseURL))
 	g.GET("/me", h.Me)
 	g.POST("/signup", h.Signup)
 	g.POST("/signin", h.SignIn)

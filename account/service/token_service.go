@@ -3,11 +3,15 @@ package service
 import (
 	"context"
 	"crypto/rsa"
+	"log"
+
 	"github.com/amiosamu/markdown/account/model"
 	"github.com/amiosamu/markdown/account/model/apperrors"
-	"log"
 )
 
+// tokenService used for injecting an implementation of TokenRepository
+// for use in service methods along with keys and secrets for
+// signing JWTs
 type tokenService struct {
 	TokenRepository       model.TokenRepository
 	PrivateKey            *rsa.PrivateKey
@@ -17,7 +21,7 @@ type tokenService struct {
 	RefreshExpirationSecs int64
 }
 
-// TSConfig will hold repositories that will eventually be injected into
+// TSConfig will hold repositories that will eventually be injected into this
 // this service layer
 type TSConfig struct {
 	TokenRepository       model.TokenRepository
@@ -29,9 +33,10 @@ type TSConfig struct {
 }
 
 // NewTokenService is a factory function for
-// initializing a userService with its repository layer dependencies
+// initializing a UserService with its repository layer dependencies
 func NewTokenService(c *TSConfig) model.TokenService {
 	return &tokenService{
+		TokenRepository:       c.TokenRepository,
 		PrivateKey:            c.PrivateKey,
 		PublicKey:             c.PublicKey,
 		RefreshSecret:         c.RefreshSecret,
@@ -40,32 +45,40 @@ func NewTokenService(c *TSConfig) model.TokenService {
 	}
 }
 
+// NewPairFromUser creates fresh id and refresh tokens for the current user
+// If a previous token is included, the previous token is removed from
+// the tokens repository
 func (s *tokenService) NewPairFromUser(ctx context.Context, u *model.User, prevTokenID string) (*model.TokenPair, error) {
+	// No need to use a repository for idToken as it is unrelated to any data source
 	idToken, err := generateIDToken(u, s.PrivateKey, s.IDExpirationSecs)
+
 	if err != nil {
 		log.Printf("Error generating idToken for uid: %v. Error: %v\n", u.UID, err.Error())
 		return nil, apperrors.NewInternalServerError()
 	}
-	refreshToken, err := generateRefreshToken(u.UID, s.RefreshSecret, s.IDExpirationSecs)
+
+	refreshToken, err := generateRefreshToken(u.UID, s.RefreshSecret, s.RefreshExpirationSecs)
 
 	if err != nil {
 		log.Printf("Error generating refreshToken for uid: %v. Error: %v\n", u.UID, err.Error())
 		return nil, apperrors.NewInternalServerError()
 	}
 
+	// set freshly minted refresh token to valid list
 	if err := s.TokenRepository.SetRefreshToken(ctx, u.UID.String(), refreshToken.ID, refreshToken.ExpiresIn); err != nil {
-		log.Printf("error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
+		log.Printf("Error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
 		return nil, apperrors.NewInternalServerError()
 	}
 
+	// delete user's current refresh token (used when refreshing idToken)
 	if prevTokenID != "" {
 		if err := s.TokenRepository.DeleteRefreshToken(ctx, u.UID.String(), prevTokenID); err != nil {
-			log.Printf("could not delete previous refreshToken for uid:  %v, tokenID: %v\n", u.UID.String(), prevTokenID)
+			log.Printf("Could not delete previous refreshToken for uid: %v, tokenID: %v\n", u.UID.String(), prevTokenID)
 		}
 	}
+
 	return &model.TokenPair{
 		IDToken:      idToken,
 		RefreshToken: refreshToken.SS,
 	}, nil
-
 }

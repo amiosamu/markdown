@@ -7,15 +7,15 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 )
 
 func TestNewPairFromuser(t *testing.T) {
-	priv, _ := ioutil.ReadFile("../rsa_private_test.pem")
+	priv, _ := os.ReadFile("../rsa_private_test.pem")
 	privKey, _ := jwt.ParseRSAPrivateKeyFromPEM(priv)
-	pub, _ := ioutil.ReadFile("../rsa_public_test.pem")
+	pub, _ := os.ReadFile("../rsa_public_test.pem")
 	pubKey, _ := jwt.ParseRSAPublicKeyFromPEM(pub)
 	secret := "anotsorandomtestsecret"
 
