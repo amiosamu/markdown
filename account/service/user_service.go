@@ -12,6 +12,11 @@ type userService struct {
 	UserRepository model.UserRepository
 }
 
+func (s *userService) SignIn(ctx context.Context, u *model.User) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 type USConfig struct {
 	UserRepository model.UserRepository
 }
@@ -37,5 +42,11 @@ func (s *userService) Signup(ctx context.Context, u *model.User) error {
 	if err := s.UserRepository.Create(ctx, u); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (s *userService) Signin(ctx context.Context, u *model.User) error {
+	// TODO implement
+
 	return nil
 }
