@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"github.com/google/uuid"
+	"time"
 )
 
 type UserService interface {
@@ -17,4 +18,9 @@ type TokenService interface {
 type UserRepository interface {
 	FindByID(ctx context.Context, uuid uuid.UUID) (*User, error)
 	Create(ctx context.Context, u *User) error
+}
+
+type TokenRepository interface {
+	SetRefreshToken(ctx context.Context, userID, tokenID string, expiresIn time.Duration) error
+	DeleteRefreshToken(ctx context.Context, userID, prevTokenID string) error
 }

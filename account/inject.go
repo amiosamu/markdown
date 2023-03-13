@@ -7,7 +7,6 @@ import (
 	"github.com/amiosamu/markdown/account/service"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -17,12 +16,13 @@ func inject(d *DataSources) (*gin.Engine, error) {
 	log.Println("injecting data sources")
 
 	userRepository := repository.NewUserRepository(d.DB)
+	tokenRepository := repository.NewTokenRepository(d.RedisClient)
 	userService := service.NewUserService(&service.USConfig{
 		UserRepository: userRepository,
 	})
 
 	privKeyFile := os.Getenv("PRIV_KEY_FILE")
-	priv, err := ioutil.ReadFile(privKeyFile)
+	priv, err := os.ReadFile(privKeyFile)
 
 	if err != nil {
 		return nil, fmt.Errorf("could not read private key: %w", err)
@@ -34,7 +34,7 @@ func inject(d *DataSources) (*gin.Engine, error) {
 	}
 
 	pubKeyFile := os.Getenv("PUB_KEY_FILE")
-	pub, err := ioutil.ReadFile(pubKeyFile)
+	pub, err := os.ReadFile(pubKeyFile)
 	if err != nil {
 		return nil, fmt.Errorf("could not read public key: %w", err)
 	}
@@ -54,6 +54,7 @@ func inject(d *DataSources) (*gin.Engine, error) {
 	refreshExp, err := strconv.ParseInt(refreshTokenExp, 0, 64)
 	refreshSecret := os.Getenv("REFRESH_SECRET")
 	tokenService := service.NewTokenService(&service.TSConfig{
+		TokenRepository:       tokenRepository,
 		PrivateKey:            privKey,
 		PublicKey:             pubKey,
 		RefreshSecret:         refreshSecret,
