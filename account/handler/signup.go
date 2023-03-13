@@ -18,11 +18,13 @@ func (h *Handler) Signup(c *gin.Context) {
 	if ok := bindData(c, &req); !ok {
 		return
 	}
+
 	u := &model.User{
 		Email:    req.Email,
 		Password: req.Password,
 	}
-	err := h.UserService.Signup(c, u)
+	ctx := c.Request.Context()
+	err := h.UserService.Signup(ctx, u)
 	if err != nil {
 		log.Printf("failed to sign up user: %v\n", err.Error())
 		c.JSON(apperrors.Status(err), gin.H{
