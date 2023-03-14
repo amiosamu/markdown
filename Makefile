@@ -25,3 +25,12 @@ migrate-down:
 
 migrate-force:
 	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:$(PORT)/postgres?sslmode=disable force $(VERSION)
+
+
+init:
+	docker-compose up -d postgres-account && \
+	$(MAKE) create-keypair ENV=dev && \
+	$(MAKE) create-keypair ENV=test && \
+	$(MAKE) migrate-down APPPATH=account N= && \
+	$(MAKE) migrate-up APPPATH=account N= && \
+	docker-compose down
