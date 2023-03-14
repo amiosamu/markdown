@@ -52,3 +52,41 @@ func TestGet(t *testing.T) {
 		mockUserRepository.AssertExpectations(t)
 	})
 }
+
+func TestSignIn(t *testing.T) {
+	email := "bob@gmail.com"
+	validPassw := "validpassword"
+	hashedValidPass, _ := hashPassword(validPassw)
+	invalidPass := "invalidpassword"
+
+	mockUserRepository := new(mocks.MockUserRepository)
+
+	us := NewUserService(&USConfig{
+		UserRepository: mockUserRepository,
+	})
+
+	t.Run("Success", func(t *testing.T) {
+		uid, _ := uuid.NewRandom()
+
+		mockUser := &model.User{
+			Email:    email,
+			Password: invalidPass,
+		}
+		mockUserResp := &model.User{
+			UID:      uid,
+			Email:    email,
+			Password: hashedValidPass,
+		}
+		mockArgs := mock.Arguments{
+			mock.AnythingOfType("*context.emptyCtx"),
+			email,
+		}
+		mockUserRepository.
+			On("FindByEmail", mockArgs...).Return(mockUserResp, nil)
+
+		ctx := context.TODO()
+		err := us.SignIn(ctx, mockUser)
+		assert.NoError(t, err)
+		mockUserRepository.AssertCalled(t, "FindByEmail", mockArgs...)
+	})
+}

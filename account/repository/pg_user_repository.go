@@ -14,6 +14,18 @@ type PGUserRepository struct {
 	DB *sqlx.DB
 }
 
+func (r *PGUserRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
+	user := &model.User{}
+
+	query := "SELECT * FROM users WHERE email=$1"
+
+	if err := r.DB.GetContext(ctx, user, query, email); err != nil {
+		log.Printf("unable to get user with email address: %v. Err: %v\n", email, user)
+		return nil, apperrors.NewNotFound("email", email)
+	}
+	return user, nil
+}
+
 func NewUserRepository(db *sqlx.DB) model.UserRepository {
 	return &PGUserRepository{
 		DB: db,

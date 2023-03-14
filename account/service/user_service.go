@@ -13,8 +13,21 @@ type userService struct {
 }
 
 func (s *userService) SignIn(ctx context.Context, u *model.User) error {
-	//TODO implement me
-	panic("implement me")
+	uFetched, err := s.UserRepository.FindByEmail(ctx, u.Email)
+
+	if err != nil {
+		return apperrors.NewAuthorization("invalid email and password")
+	}
+	match, err := comparePasswords(uFetched.Password, u.Password)
+
+	if err != nil {
+		return apperrors.NewInternalServerError()
+	}
+
+	if !match {
+		return apperrors.NewAuthorization("passwords do not match")
+	}
+	return nil
 }
 
 type USConfig struct {
